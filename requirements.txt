@@ -1,0 +1,14 @@
+# Hardware & Software Requirements for Headway Motion Wheelchair
+#
+# Software
+# --------
+# Arduino IDE 1.8+ (or Arduino CLI)
+#
+# Arduino Libraries (install via Library Manager)
+# ------------------------------------------------
+Adafruit_MPU6050    # IMU / gyroscope sensor library
+MFRC522             # RFID reader library (RC522 module)
+LiquidCrystal_I2C  # I2C LCD display library
+Adafruit_Sensor     # Unified sensor abstraction (dependency of MPU6050)
+Wire                # I2C communication (built-in)
+SPI                 # SPI communication (built-in, needed for RFID)

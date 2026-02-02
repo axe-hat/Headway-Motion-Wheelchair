@@ -1,0 +1,25 @@
+# Compiled object files
+*.o
+*.elf
+*.hex
+*.bin
+
+# Build directories
+build/
+Release/
+Debug/
+
+# IDE files
+.vscode/
+*.code-workspace
+
+# Swap and temp files
+*.swp
+*.swo
+*~
+*.bak
+*.tmp
+
+# OS files
+.DS_Store
+Thumbs.db
