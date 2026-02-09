@@ -17,29 +17,7 @@
 #include <Adafruit_Sensor.h>
 #include <Wire.h>
 
-// ---------------------------------------------------------------------------
-// Pin definitions
-// ---------------------------------------------------------------------------
-
-// Receiver pin — goes HIGH when RFID unit grants access
-#define RECEIVER_PIN 5
-
-// Right motor (H-bridge channel A)
-#define RIGHT_FWD_PIN  4    // IN1
-#define RIGHT_BWD_PIN  2    // IN2
-#define RIGHT_PWM_PIN  11   // ENA (PWM speed)
-
-// Left motor (H-bridge channel B)
-#define LEFT_FWD_PIN   7    // IN3
-#define LEFT_BWD_PIN   8    // IN4
-#define LEFT_PWM_PIN   10   // ENB (PWM speed)
-
-// ---------------------------------------------------------------------------
-// Constants
-// ---------------------------------------------------------------------------
-#define SERIAL_BAUD    115200
-#define MOTOR_SPEED    100    // Default PWM duty (0-255)
-#define TILT_THRESHOLD 6.00  // Acceleration threshold for tilt detection (m/s^2)
+#include "config.h"  // Pin assignments, thresholds, and tuneable constants
 
 // ---------------------------------------------------------------------------
 // Global objects
