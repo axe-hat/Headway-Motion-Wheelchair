@@ -17,12 +17,14 @@
 #include <Adafruit_Sensor.h>
 #include <Wire.h>
 
-#include "config.h"  // Pin assignments, thresholds, and tuneable constants
+#include "config.h"       // Pin assignments, thresholds, and tuneable constants
+#include "calibration.h"  // Startup calibration routine
 
 // ---------------------------------------------------------------------------
 // Global objects
 // ---------------------------------------------------------------------------
-Adafruit_MPU6050 head;  // MPU6050 sensor instance
+Adafruit_MPU6050   head;   // MPU6050 sensor instance
+CalibrationRoutine calib;  // Startup calibration (computes axis offsets)
 
 // ===========================================================================
 // Setup
@@ -60,6 +62,12 @@ void setup(void) {
     head.setAccelerometerRange(MPU6050_RANGE_2_G);
     Serial.println("Accelerometer range set to +/- 2G");
     Serial.println();
+
+    // --- Run startup calibration ---
+    // The user should keep the sensor stationary during this phase.
+    calib.run(head);
+
+    Serial.println("Setup complete — ready for input");
     delay(100);
 }
 
@@ -116,12 +124,14 @@ void loop() {
     while (digitalRead(RECEIVER_PIN)) {
         digitalWrite(LED_BUILTIN, HIGH);
 
-        // Read accelerometer data
+        // Read accelerometer data and apply calibration offsets
         sensors_event_t a, g, temp;
         head.getEvent(&a, &g, &temp);
 
-        float tiltY = a.acceleration.y;  // left / right tilt
         float tiltX = a.acceleration.x;  // forward / backward tilt
+        float tiltY = a.acceleration.y;  // left / right tilt
+        float tiltZ = a.acceleration.z;
+        calib.apply(tiltX, tiltY, tiltZ);
 
         // --- Movement decision tree ---
         if (tiltY <= TILT_THRESHOLD) {
