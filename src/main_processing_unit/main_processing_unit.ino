@@ -30,11 +30,15 @@ CalibrationRoutine calib;  // Startup calibration (computes axis offsets)
 // Setup
 // ===========================================================================
 void setup(void) {
+    // Start I2C bus for MPU6050 communication
     Wire.begin();
+
+    // Built-in LED signals that the system is active
     pinMode(LED_BUILTIN, OUTPUT);
 
-    // --- Motor pins ---
-    // Right motor
+    // --- Configure motor driver pins as outputs ---
+    // Each motor needs: forward direction, backward direction, PWM enable
+    // Right motor (H-bridge channel A)
     pinMode(RIGHT_FWD_PIN, OUTPUT);
     pinMode(RIGHT_BWD_PIN, OUTPUT);
     pinMode(RIGHT_PWM_PIN, OUTPUT);
@@ -43,10 +47,10 @@ void setup(void) {
     pinMode(LEFT_BWD_PIN, OUTPUT);
     pinMode(LEFT_PWM_PIN, OUTPUT);
 
-    // --- Serial / Gyroscope initialisation ---
+    // --- Serial monitor for debugging ---
     Serial.begin(SERIAL_BAUD);
     while (!Serial) {
-        delay(10);
+        delay(10);  // Wait for USB serial connection (needed on some boards)
     }
 
     Serial.println("Gyroscope coming online...");
@@ -134,6 +138,12 @@ void loop() {
         calib.apply(tiltX, tiltY, tiltZ);
 
         // --- Movement decision tree ---
+        //
+        // Priority: Y-axis (turning) is evaluated first.
+        //   |tiltY| > TILT_THRESHOLD  =>  turn left or right
+        //   |tiltY| <= threshold       =>  check X-axis for fwd/bwd
+        //   Both within threshold      =>  dead zone, stop motors
+        //
         if (tiltY <= TILT_THRESHOLD) {
             if (tiltY >= -TILT_THRESHOLD) {
                 // Y-axis within dead zone — check X for forward/backward
@@ -160,4 +170,5 @@ void loop() {
             leftMotor(0, MOTOR_SPEED);
         }
     }
+    // RFID access revoked — LED off, motors idle until next authorisation
 }

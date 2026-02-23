@@ -45,15 +45,18 @@ LiquidCrystal_I2C lcd(LCD_ADDR, LCD_COLS, LCD_ROWS);
 // Setup
 // ===========================================================================
 void setup() {
+    // MSG_PIN goes HIGH to signal the main unit that access is granted
     pinMode(MSG_PIN, OUTPUT);
+
+    // Serial for debug output
     Serial.begin(SERIAL_BAUD);
 
-    // Initialise SPI bus and RFID reader
+    // Initialise SPI bus and RFID reader hardware
     SPI.begin();
     rfidReader.PCD_Init();
-    delay(4);
+    delay(4);  // Short delay for RC522 to stabilise after init
 
-    // Initialise LCD
+    // Initialise 16x2 LCD and show boot message
     lcd.init();
     lcd.backlight();
     lcd.setCursor(0, 0);
@@ -65,8 +68,9 @@ void setup() {
 // Main loop
 // ===========================================================================
 void loop() {
-    lcd.clear();
+    lcd.clear();  // Clear display each iteration while waiting for a card
 
+    // readCardUID() blocks until a card is presented and read successfully
     while (readCardUID()) {
         if (scannedTag == masterTag) {
             // Authorised card detected
